@@ -1,0 +1,77 @@
+import java.util.*;
+
+public class Ejercicio5_Dijkstra {
+
+    static int INF = 999999;
+
+    public static void main(String[] args) {
+        int[][] g = {
+            {0, 4, 2, 7, 9, 3, 8, 6, 5, 1},
+            {4, 0, 6, 2, 3, 7, 5, 8, 9, 4},
+            {2, 6, 0, 5, 1, 4, 7, 3, 8, 6},
+            {7, 2, 5, 0, 6, 8, 4, 1, 3, 7},
+            {9, 3, 1, 6, 0, 2, 5, 7, 4, 8},
+            {3, 7, 4, 8, 2, 0, 6, 5, 1, 9},
+            {8, 5, 7, 4, 5, 6, 0, 2, 3, 4},
+            {6, 8, 3, 1, 7, 5, 2, 0, 6, 2},
+            {5, 9, 8, 3, 4, 1, 3, 6, 0, 5},
+            {1, 4, 6, 7, 8, 9, 4, 2, 5, 0}
+        };
+
+        int n = g.length;
+        int mejorVertice = -1;
+        int mejorSuma = INF;
+
+        for (int origen = 0; origen < n; origen++) {
+            int[] dist = dijkstra(g, origen);
+
+            int suma = 0;
+            System.out.print("Desde vértice " + origen + ": ");
+            for (int d : dist) {
+                System.out.print(d + " ");
+                suma += d;
+            }
+            System.out.println(" | Suma = " + suma);
+
+            if (suma < mejorSuma) {
+                mejorSuma = suma;
+                mejorVertice = origen;
+            }
+        }
+
+        System.out.println("\nVértice más central: " + mejorVertice);
+        System.out.println("Suma total mínima: " + mejorSuma);
+    }
+
+    static int[] dijkstra(int[][] g, int origen) {
+        int n = g.length;
+        int[] dist = new int[n];
+        boolean[] visitado = new boolean[n];
+
+        Arrays.fill(dist, INF);
+        dist[origen] = 0;
+
+        for (int i = 0; i < n; i++) {
+            int u = -1;
+            int min = INF;
+
+            for (int j = 0; j < n; j++) {
+                if (!visitado[j] && dist[j] < min) {
+                    min = dist[j];
+                    u = j;
+                }
+            }
+
+            if (u == -1) break;
+            visitado[u] = true;
+
+            for (int v = 0; v < n; v++) {
+                if (!visitado[v] && g[u][v] != 0 && dist[u] + g[u][v] < dist[v]) {
+                    dist[v] = dist[u] + g[u][v];
+                }
+            }
+        }
+
+        return dist;
+    }
+}
