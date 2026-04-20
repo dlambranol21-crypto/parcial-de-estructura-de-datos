@@ -1,0 +1,62 @@
+import java.util.*;
+
+public class Ejercicio3_Kruskal {
+
+    public static void main(String[] args) {
+        int n = 6;
+        ArrayList<int[]> aristas = new ArrayList<>();
+
+        aristas.add(new int[]{0, 1, 4});
+        aristas.add(new int[]{0, 2, -2});
+        aristas.add(new int[]{1, 2, 1});
+        aristas.add(new int[]{1, 3, 7});
+        aristas.add(new int[]{2, 3, 3});
+        aristas.add(new int[]{2, 4, 5});
+        aristas.add(new int[]{3, 4, -1});
+        aristas.add(new int[]{3, 5, 2});
+        aristas.add(new int[]{4, 5, 6});
+
+        aristas.sort(Comparator.comparingInt(a -> a[2]));
+
+        System.out.println("Aristas ordenadas antes del proceso:");
+        for (int[] a : aristas) {
+            System.out.println(a[0] + " - " + a[1] + " peso: " + a[2]);
+        }
+
+        int[] padre = new int[n];
+        for (int i = 0; i < n; i++) padre[i] = i;
+
+        int costo = 0;
+        int ciclosDescartados = 0;
+        ArrayList<int[]> mst = new ArrayList<>();
+
+        for (int[] a : aristas) {
+            int u = a[0], v = a[1], w = a[2];
+
+            int ru = find(padre, u);
+            int rv = find(padre, v);
+
+            if (ru != rv) {
+                padre[ru] = rv;
+                mst.add(a);
+                costo += w;
+            } else {
+                ciclosDescartados++;
+            }
+        }
+
+        System.out.println("\nCiclos potenciales detectados y descartados: " + ciclosDescartados);
+
+        System.out.println("\nMST resultante:");
+        for (int[] a : mst) {
+            System.out.println(a[0] + " - " + a[1] + " peso: " + a[2]);
+        }
+
+        System.out.println("\nCosto total del MST: " + costo);
+    }
+
+    static int find(int[] padre, int x) {
+        if (padre[x] == x) return x;
+        return padre[x] = find(padre, padre[x]);
+    }
+}
