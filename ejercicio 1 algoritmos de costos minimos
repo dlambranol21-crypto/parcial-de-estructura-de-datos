@@ -1,0 +1,136 @@
+import java.util.*;
+
+public class Ejercicio1_CostosMinimos {
+
+    static int N = 10;
+
+    public static void main(String[] args) {
+        int[][] grafo = new int[N][N];
+        Random r = new Random();
+
+        // Generar matriz de adyacencia
+        for (int i = 0; i < N; i++) {
+            for (int j = i; j < N; j++) {
+                if (i == j) {
+                    grafo[i][j] = 0;
+                } else {
+                    int peso = r.nextInt(100) + 1;
+                    grafo[i][j] = peso;
+                    grafo[j][i] = peso;
+                }
+            }
+        }
+
+        System.out.println("Matriz de adyacencia:");
+        imprimirMatriz(grafo);
+
+        List<String> mstPrim = prim(grafo);
+        List<String> mstKruskal = kruskal(grafo);
+
+        System.out.println("\nAristas MST con Prim:");
+        for (String s : mstPrim) System.out.println(s);
+
+        System.out.println("\nAristas MST con Kruskal:");
+        for (String s : mstKruskal) System.out.println(s);
+
+        if (new HashSet<>(mstPrim).equals(new HashSet<>(mstKruskal))) {
+            System.out.println("\nAmbos métodos generan el mismo conjunto de aristas.");
+        } else {
+            System.out.println("\nLos métodos NO generan el mismo conjunto de aristas.");
+
+            HashSet<String> soloPrim = new HashSet<>(mstPrim);
+            soloPrim.removeAll(mstKruskal);
+
+            HashSet<String> soloKruskal = new HashSet<>(mstKruskal);
+            soloKruskal.removeAll(mstPrim);
+
+            System.out.println("Solo en Prim: " + soloPrim);
+            System.out.println("Solo en Kruskal: " + soloKruskal);
+        }
+    }
+
+    static void imprimirMatriz(int[][] g) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.printf("%4d", g[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    static List<String> prim(int[][] g) {
+        boolean[] seleccionado = new boolean[N];
+        int[] minimo = new int[N];
+        int[] padre = new int[N];
+        List<String> resultado = new ArrayList<>();
+
+        Arrays.fill(minimo, Integer.MAX_VALUE);
+        minimo[0] = 0;
+        padre[0] = -1;
+
+        for (int i = 0; i < N - 1; i++) {
+            int u = -1;
+            int min = Integer.MAX_VALUE;
+
+            for (int v = 0; v < N; v++) {
+                if (!seleccionado[v] && minimo[v] < min) {
+                    min = minimo[v];
+                    u = v;
+                }
+            }
+
+            seleccionado[u] = true;
+
+            for (int v = 0; v < N; v++) {
+                if (g[u][v] != 0 && !seleccionado[v] && g[u][v] < minimo[v]) {
+                    minimo[v] = g[u][v];
+                    padre[v] = u;
+                }
+            }
+        }
+
+        for (int i = 1; i < N; i++) {
+            int a = Math.min(i, padre[i]);
+            int b = Math.max(i, padre[i]);
+            resultado.add(a + "-" + b + " (" + g[i][padre[i]] + ")");
+        }
+
+        return resultado;
+    }
+
+    static List<String> kruskal(int[][] g) {
+        ArrayList<int[]> aristas = new ArrayList<>();
+        List<String> resultado = new ArrayList<>();
+
+        for (int i = 0; i < N; i++) {
+            for (int j = i + 1; j < N; j++) {
+                aristas.add(new int[]{i, j, g[i][j]});
+            }
+        }
+
+        aristas.sort(Comparator.comparingInt(a -> a[2]));
+
+        int[] padre = new int[N];
+        for (int i = 0; i < N; i++) padre[i] = i;
+
+        for (int[] e : aristas) {
+            int u = e[0], v = e[1], w = e[2];
+            int ru = find(padre, u);
+            int rv = find(padre, v);
+
+            if (ru != rv) {
+                padre[ru] = rv;
+                resultado.add(u + "-" + v + " (" + w + ")");
+            }
+
+            if (resultado.size() == N - 1) break;
+        }
+
+        return resultado;
+    }
+
+    static int find(int[] padre, int x) {
+        if (padre[x] == x) return x;
+        return padre[x] = find(padre, padre[x]);
+    }
+}
