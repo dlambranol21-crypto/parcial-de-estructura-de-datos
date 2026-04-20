@@ -1,0 +1,76 @@
+import java.util.*;
+
+public class Ejercicio4_CaminoMenorQueX {
+
+    static int INF = 999999;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int[][] g = {
+            {0, 4, 2, INF, INF},
+            {INF, 0, 1, 5, INF},
+            {INF, INF, 0, 8, 10},
+            {INF, INF, INF, 0, 2},
+            {INF, INF, INF, INF, 0}
+        };
+
+        System.out.print("Ingrese vértice origen: ");
+        int origen = sc.nextInt();
+
+        System.out.print("Ingrese vértice destino: ");
+        int destino = sc.nextInt();
+
+        System.out.print("Ingrese X: ");
+        int x = sc.nextInt();
+
+        int n = g.length;
+        int[] dist = new int[n];
+        int[] padre = new int[n];
+        boolean[] visitado = new boolean[n];
+
+        Arrays.fill(dist, INF);
+        Arrays.fill(padre, -1);
+        dist[origen] = 0;
+
+        for (int i = 0; i < n; i++) {
+            int u = -1;
+            int min = INF;
+
+            for (int j = 0; j < n; j++) {
+                if (!visitado[j] && dist[j] < min) {
+                    min = dist[j];
+                    u = j;
+                }
+            }
+
+            if (u == -1) break;
+            visitado[u] = true;
+
+            for (int v = 0; v < n; v++) {
+                if (g[u][v] != INF && dist[u] + g[u][v] < dist[v]) {
+                    dist[v] = dist[u] + g[u][v];
+                    padre[v] = u;
+                }
+            }
+        }
+
+        if (dist[destino] < x) {
+            System.out.println("Sí existe un camino con costo menor que X");
+            System.out.println("Costo: " + dist[destino]);
+
+            ArrayList<Integer> ruta = new ArrayList<>();
+            int actual = destino;
+            while (actual != -1) {
+                ruta.add(actual);
+                actual = padre[actual];
+            }
+            Collections.reverse(ruta);
+            System.out.println("Ruta: " + ruta);
+        } else {
+            System.out.println("No existe un camino con costo menor que X");
+        }
+
+        sc.close();
+    }
+}
