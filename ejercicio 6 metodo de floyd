@@ -1,0 +1,62 @@
+import java.util.*;
+
+public class Ejercicio6_Floyd {
+
+    static int INF = 999999;
+
+    public static void main(String[] args) {
+        int[][] g = {
+            {0, 3, INF, 7},
+            {8, 0, 2, INF},
+            {5, INF, 0, 1},
+            {2, INF, INF, 0}
+        };
+
+        int n = g.length;
+        int[][] dist = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = g[i][j];
+            }
+        }
+
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] != INF && dist[k][j] != INF &&
+                        dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+
+        System.out.println("Matriz de distancias mínimas:");
+        imprimir(dist);
+
+        boolean cicloNegativo = false;
+        for (int i = 0; i < n; i++) {
+            if (dist[i][i] < 0) {
+                cicloNegativo = true;
+                System.out.println("Ciclo negativo detectado en vértice: " + i);
+            }
+        }
+
+        if (!cicloNegativo) {
+            System.out.println("No existen ciclos negativos.");
+        } else {
+            System.out.println("Hay ciclos negativos. Se deberían eliminar las aristas implicadas y ejecutar de nuevo.");
+        }
+    }
+
+    static void imprimir(int[][] m) {
+        for (int[] fila : m) {
+            for (int x : fila) {
+                if (x == INF) System.out.print("INF ");
+                else System.out.print(x + " ");
+            }
+            System.out.println();
+        }
+    }
+}
