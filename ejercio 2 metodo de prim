@@ -1,0 +1,73 @@
+import java.util.*;
+
+public class Ejercicio2_Prim {
+
+    static int N = 10;
+
+    public static void main(String[] args) {
+        int[][] grafo = new int[N][N];
+        Random r = new Random();
+
+        for (int i = 0; i < N; i++) {
+            for (int j = i; j < N; j++) {
+                if (i == j) {
+                    grafo[i][j] = 0;
+                } else {
+                    int peso = r.nextInt(100) + 1;
+                    grafo[i][j] = peso;
+                    grafo[j][i] = peso;
+                }
+            }
+        }
+
+        boolean[] seleccionado = new boolean[N];
+        int[] minimo = new int[N];
+        int[] padre = new int[N];
+        ArrayList<Integer> orden = new ArrayList<>();
+        int comparaciones = 0;
+        int costoTotal = 0;
+
+        Arrays.fill(minimo, Integer.MAX_VALUE);
+        minimo[0] = 0;
+        padre[0] = -1;
+
+        for (int i = 0; i < N; i++) {
+            int u = -1;
+            int min = Integer.MAX_VALUE;
+
+            for (int v = 0; v < N; v++) {
+                comparaciones++;
+                if (!seleccionado[v] && minimo[v] < min) {
+                    min = minimo[v];
+                    u = v;
+                }
+            }
+
+            seleccionado[u] = true;
+            orden.add(u);
+
+            if (padre[u] != -1) {
+                costoTotal += grafo[u][padre[u]];
+            }
+
+            for (int v = 0; v < N; v++) {
+                comparaciones++;
+                if (grafo[u][v] != 0 && !seleccionado[v] && grafo[u][v] < minimo[v]) {
+                    minimo[v] = grafo[u][v];
+                    padre[v] = u;
+                }
+            }
+        }
+
+        System.out.println("Orden exacto de selección de vértices:");
+        System.out.println(orden);
+
+        System.out.println("\nAristas del MST:");
+        for (int i = 1; i < N; i++) {
+            System.out.println(padre[i] + " - " + i + " peso: " + grafo[i][padre[i]]);
+        }
+
+        System.out.println("\nCosto total: " + costoTotal);
+        System.out.println("Cantidad total de comparaciones: " + comparaciones);
+    }
+}
